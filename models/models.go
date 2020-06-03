@@ -3,6 +3,8 @@ package models
 import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"strconv"
+
 	//_ "github.com/mattn/go-sqlite3"
 	"github.com/unknwon/com"
 	"os"
@@ -57,13 +59,28 @@ func RegisterDB()  {
 func AddCategory(name string) error  {
 	// 获取orm对象
 	newOrm := orm.NewOrm()
-	cate:=&Category{Title:name}
+	cate:=&Category{Title:name,Created:time.Now().Local(),TopicTime:time.Now().Local()}
 	qs := newOrm.QueryTable("category")
 	err:=qs.Filter("title",name).One(cate)
 	if err == nil{
 		return err
 	}
 	_, err = newOrm.Insert(cate)
+	if err!=nil{
+		return err
+	}
+	return nil
+}
+
+func DelCategory(id string) error  {
+	cid, err := strconv.ParseInt(id, 10, 64)
+	if err!=nil{
+		return err
+	}
+
+	o := orm.NewOrm()
+	cate:=&Category{Id:cid}
+	_, err = o.Delete(cate)
 	if err!=nil{
 		return err
 	}
