@@ -96,3 +96,20 @@ func GetAllCategories()([]*Category, error)  {
 	_, err := qs.All(&cates)
 	return cates,err
 }
+
+func AddTopic(title,content string) error {
+	ormer := orm.NewOrm()
+
+	topic:=&Topic{
+		Title:title,
+		Content:content,
+		Created:time.Now(),
+		Updated:time.Now(),
+		ReplyTime:time.Now(),
+	}
+	_, err := ormer.Insert(topic)
+	if err != nil{
+		return err
+	}
+	return nil
+}

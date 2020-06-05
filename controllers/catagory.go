@@ -10,6 +10,7 @@ type CategoryController struct {
 }
 
 func (c *CategoryController) Get() {
+	c.Data["IsLogin"]=checkAccount(c.Ctx)
 	op := c.Input().Get("op")
 	switch op {
 	case "add":
@@ -38,7 +39,6 @@ func (c *CategoryController) Get() {
 	c.Data["IsCategory"]=true
 	c.TplName="category.html"
 
-	c.Data["IsLogin"]=checkAccount(c.Ctx)
 	var err error
 	c.Data["Categories"], err = models.GetAllCategories()
 	if err !=nil{
