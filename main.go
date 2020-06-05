@@ -7,13 +7,13 @@ import (
 	_ "wwwpigcom/beeblogger/routers"
 )
 
-func init()  {
+func init() {
 	models.RegisterDB()
 }
 
 func main() {
-	orm.Debug=true
-	orm.RunSyncdb("default",false,true)
+	orm.Debug = true
+	orm.RunSyncdb("default", false, true)
 	beego.Run("127.0.0.1:8081")
+	beego.SetLevel(4)
 }
-

@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	_DB_NAME = "data/beeblog.db"
+	_DB_NAME      = "data/beeblog.db"
 	_MYSQL_DRIVER = "mysql"
 	//_SQLITE3_DRIVER="sqlite3"
 )
@@ -43,72 +43,80 @@ type Topic struct {
 	ReplyLastUserId int64
 }
 
-func RegisterDB()  {
+func RegisterDB() {
 	if !com.IsExist(_DB_NAME) {
-		os.MkdirAll(path.Dir(_DB_NAME),os.ModePerm)
+		os.MkdirAll(path.Dir(_DB_NAME), os.ModePerm)
 		os.Create(_DB_NAME)
 	}
-	orm.RegisterModel(new(Category),new(Topic))
-	orm.RegisterDriver(_MYSQL_DRIVER,orm.DRMySQL)
+	orm.RegisterModel(new(Category), new(Topic))
+	orm.RegisterDriver(_MYSQL_DRIVER, orm.DRMySQL)
 	//orm.RegisterDataBase("default",_MYSQL_DRIVER,_DB_NAME,10)
 	maxIdle := 10
 	maxConn := 10
 	orm.RegisterDataBase("default", _MYSQL_DRIVER, "root:root@tcp(localhost:3306)/orm_test?charset=utf8", maxIdle, maxConn)
 }
 
-func AddCategory(name string) error  {
+func AddCategory(name string) error {
 	// 获取orm对象
 	newOrm := orm.NewOrm()
-	cate:=&Category{Title:name,Created:time.Now().Local(),TopicTime:time.Now().Local()}
+	cate := &Category{Title: name, Created: time.Now().Local(), TopicTime: time.Now().Local()}
 	qs := newOrm.QueryTable("category")
-	err:=qs.Filter("title",name).One(cate)
-	if err == nil{
+	err := qs.Filter("title", name).One(cate)
+	if err == nil {
 		return err
 	}
 	_, err = newOrm.Insert(cate)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func DelCategory(id string) error  {
+func DelCategory(id string) error {
 	cid, err := strconv.ParseInt(id, 10, 64)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 
 	o := orm.NewOrm()
-	cate:=&Category{Id:cid}
+	cate := &Category{Id: cid}
 	_, err = o.Delete(cate)
-	if err!=nil{
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetAllCategories()([]*Category, error)  {
+func GetAllTopics() ([]*Topic, error) {
+	torm := orm.NewOrm()
+	topics := make([]*Topic, 0)
+	tqs := torm.QueryTable("topic")
+	_, err := tqs.All(&topics)
+	return topics, err
+}
+
+func GetAllCategories() ([]*Category, error) {
 	newOrm := orm.NewOrm()
 
-	cates:=make([]*Category,0)
+	cates := make([]*Category, 0)
 
 	qs := newOrm.QueryTable("category")
 	_, err := qs.All(&cates)
-	return cates,err
+	return cates, err
 }
 
-func AddTopic(title,content string) error {
+func AddTopic(title, content string) error {
 	ormer := orm.NewOrm()
 
-	topic:=&Topic{
-		Title:title,
-		Content:content,
-		Created:time.Now(),
-		Updated:time.Now(),
-		ReplyTime:time.Now(),
+	topic := &Topic{
+		Title:     title,
+		Content:   content,
+		Created:   time.Now(),
+		Updated:   time.Now(),
+		ReplyTime: time.Now(),
 	}
 	_, err := ormer.Insert(topic)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return nil
