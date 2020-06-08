@@ -87,11 +87,16 @@ func DelCategory(id string) error {
 	return nil
 }
 
-func GetAllTopics() ([]*Topic, error) {
+func GetAllTopics(isDesc bool) ([]*Topic, error) {
 	torm := orm.NewOrm()
 	topics := make([]*Topic, 0)
 	tqs := torm.QueryTable("topic")
-	_, err := tqs.All(&topics)
+	var err error
+	if isDesc {
+		_, err = tqs.OrderBy("-created").All(&topics)
+	} else {
+		_, err = tqs.All(&topics)
+	}
 	return topics, err
 }
 
@@ -118,6 +123,41 @@ func AddTopic(title, content string) error {
 	_, err := ormer.Insert(topic)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func GetTopic(tid string) (*Topic, error) {
+	tidNum, err := strconv.ParseInt(tid, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	torm := orm.NewOrm()
+	topic := new(Topic)
+	tqs := torm.QueryTable("topic")
+	err = tqs.Filter("id", tidNum).One(topic)
+	if err != nil {
+		return nil, err
+	}
+	topic.Views++
+	_, err = torm.Update(topic)
+	return topic, err
+}
+
+func ModifyTopic(tid, title, content string) error {
+	tidNum, err := strconv.ParseInt(tid, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	tmOrm := orm.NewOrm()
+	topic := &Topic{Id: tidNum}
+	if tmOrm.Read(topic) == nil {
+		topic.Title = title
+		topic.Content = content
+		topic.Updated = time.Now().Local()
+		tmOrm.Update(topic)
 	}
 	return nil
 }

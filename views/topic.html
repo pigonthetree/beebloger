@@ -20,15 +20,15 @@
             <th>回复数</th>
         </tr>
         </thead>
+        {{range .Topic}}
         <tbody>
-            {{range .Topic}}
             <th>{{.Id}}</th>
-            <th>{{.Title}}</th>
-            <th>{{.Updated}}</th>
-            <th>{{.Views}}</th>
-            <th>{{.ReplyCount}}</th>
-            {{end}}
+            <td>{{.Title}}</td>
+            <td>{{.Updated}}</td>
+            <td>{{.Views}}</td>
+            <td>{{.ReplyCount}}</td>
         </tbody>
+        {{end}}
     </table>
 </div>
 <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script>
