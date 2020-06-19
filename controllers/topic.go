@@ -68,3 +68,15 @@ func (t *TopicController) Modify() {
 	t.Data["Topic"] = topic
 	t.Data["Tid"] = tid
 }
+
+func (t *TopicController) Delete()  {
+	if !checkAccount(t.Ctx) {
+		t.Redirect("/login", 302)
+		return
+	}
+	err := models.DeleteTopic(t.Input().Get("tid"))
+	if err!=nil {
+		beego.Error(err)
+	}
+	t.Redirect("/",302)
+}
